@@ -1,0 +1,86 @@
+#define WATER_SENSOR_PIN        A0
+#define SMOKE_SENSOR_PIN        A1
+#define GAS_SENSOR_PIN          A2
+#define VIBRATION_SENSOR_PIN    A3
+#define FLAME_SENSOR_PIN        6
+
+#define MOTOR_WATER             13
+#define MOTOR_SMOKE             12
+#define STOP_WATER_MOTOR        7
+#define STOP_ELECTRIC_MOTOR     10
+#define BUZZER_PIN              8
+#define STOP_GAS_LED            11
+#define FIRE_FIGHTING_ROBOT     9
+
+void setup() {
+  pinMode(WATER_SENSOR_PIN, INPUT);
+  pinMode(SMOKE_SENSOR_PIN, INPUT);
+  pinMode(GAS_SENSOR_PIN, INPUT);
+  pinMode(VIBRATION_SENSOR_PIN, INPUT);
+  pinMode(FLAME_SENSOR_PIN, INPUT);
+
+  pinMode(MOTOR_WATER, OUTPUT);
+  pinMode(MOTOR_SMOKE, OUTPUT);
+  pinMode(STOP_WATER_MOTOR, OUTPUT);
+  pinMode(STOP_ELECTRIC_MOTOR, OUTPUT);
+  pinMode(BUZZER_PIN, OUTPUT);
+  pinMode(STOP_GAS_LED, OUTPUT);
+  pinMode(FIRE_FIGHTING_ROBOT, OUTPUT);
+
+  Serial.begin(9600);
+}
+
+void loop() {
+  int waterValue     = analogRead(WATER_SENSOR_PIN);
+  int smokeDetected  = digitalRead(SMOKE_SENSOR_PIN);
+  int gasDetected    = digitalRead(GAS_SENSOR_PIN);
+  int vibration      = digitalRead(VIBRATION_SENSOR_PIN);
+  int flameDetected  = digitalRead(FLAME_SENSOR_PIN);
+
+  Serial.print("Water: ");
+  Serial.print(waterValue);
+  Serial.print(" | Smoke: ");
+  Serial.print(smokeDetected);
+  Serial.print(" | Gas: ");
+  Serial.print(gasDetected);
+  Serial.print(" | Vibration: ");
+  Serial.print(vibration);
+  Serial.print(" | Flame: ");
+  Serial.println(flameDetected);
+
+  if (waterValue < 900) {
+    digitalWrite(MOTOR_WATER, HIGH);
+  } else {
+    digitalWrite(MOTOR_WATER, LOW);
+  }
+
+  if (smokeDetected == HIGH || gasDetected == HIGH || flameDetected == HIGH) {
+    digitalWrite(MOTOR_SMOKE, HIGH);
+  } else {
+    digitalWrite(MOTOR_SMOKE, LOW);
+  }
+
+  if (gasDetected == HIGH || vibration == HIGH || flameDetected == HIGH) {
+    digitalWrite(STOP_WATER_MOTOR, HIGH);
+    digitalWrite(STOP_ELECTRIC_MOTOR, HIGH);
+    digitalWrite(STOP_GAS_LED, HIGH);
+  } else {
+    digitalWrite(STOP_WATER_MOTOR, LOW);
+    digitalWrite(STOP_ELECTRIC_MOTOR, LOW);
+    digitalWrite(STOP_GAS_LED, LOW);
+  }
+
+  if (gasDetected == HIGH || flameDetected == HIGH) {
+    digitalWrite(BUZZER_PIN, HIGH);
+  } else {
+    digitalWrite(BUZZER_PIN, LOW);
+  }
+
+  if (flameDetected == HIGH) {
+    digitalWrite(FIRE_FIGHTING_ROBOT, HIGH);
+  } else {
+    digitalWrite(FIRE_FIGHTING_ROBOT, LOW);
+  }
+
+  delay(200);
+}
